@@ -4,8 +4,10 @@ import { PDFViewer } from './PDFViewer';
 import { ImagePositioner } from './ImagePositioner';
 import { TextPositioner } from './TextPositioner';
 import { mergePDFs, downloadPDF, addImageToPDF, addTextToPDF } from '../utils/pdfUtils';
+import { useTranslation } from '../i18n';
 
 export const PDFEditor: React.FC = () => {
+  const t = useTranslation();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [editedPdfBytes, setEditedPdfBytes] = useState<Uint8Array | null>(null); // 編集中のPDFバイト列
@@ -23,7 +25,7 @@ export const PDFEditor: React.FC = () => {
 
   const handleMergePDFs = async () => {
     if (selectedFiles.length < 2) {
-      alert('結合するには2つ以上のPDFファイルが必要です');
+      alert(t.alertMergeNeed2Files);
       return;
     }
 
@@ -43,16 +45,16 @@ export const PDFEditor: React.FC = () => {
       // ページインデックスをリセット
       setCurrentPageIndex(0);
 
-      alert('PDFの結合が完了しました（エクスポートボタンでダウンロードできます）');
+      alert(t.alertMergeComplete);
     } catch (error) {
       console.error('PDF結合エラー:', error);
-      alert('PDF結合に失敗しました');
+      alert(t.alertMergeError);
     }
   };
 
   const handleAddImage = async () => {
     if (!currentFile) {
-      alert('PDFファイルを選択してください');
+      alert(t.alertSelectPdfForImage);
       return;
     }
 
@@ -91,12 +93,12 @@ export const PDFEditor: React.FC = () => {
 
       // 編集結果をステートに保存（ダウンロードはしない）
       setEditedPdfBytes(pdfWithImage);
-      alert('画像の追加が完了しました');
+      alert(t.alertImageComplete);
       setShowImagePositioner(false);
       setSelectedImage(null);
     } catch (error) {
       console.error('画像追加エラー:', error);
-      alert('画像の追加に失敗しました');
+      alert(t.alertImageError);
     }
   };
 
@@ -107,7 +109,7 @@ export const PDFEditor: React.FC = () => {
 
   const handleAddText = () => {
     if (!currentFile) {
-      alert('PDFファイルを選択してください');
+      alert(t.alertSelectPdfForText);
       return;
     }
     setShowTextPositioner(true);
@@ -142,11 +144,11 @@ export const PDFEditor: React.FC = () => {
 
       // 編集結果をステートに保存（ダウンロードはしない）
       setEditedPdfBytes(pdfWithText);
-      alert('テキストの追加が完了しました');
+      alert(t.alertTextComplete);
       setShowTextPositioner(false);
     } catch (error) {
       console.error('テキスト追加エラー:', error);
-      alert('テキストの追加に失敗しました');
+      alert(t.alertTextError);
     }
   };
 
@@ -165,16 +167,16 @@ export const PDFEditor: React.FC = () => {
 
   const handleExportPDF = () => {
     if (!editedPdfBytes) {
-      alert('編集内容がありません');
+      alert(t.alertNoEdits);
       return;
     }
     downloadPDF(editedPdfBytes, 'edited.pdf');
-    alert('PDFのエクスポートが完了しました');
+    alert(t.alertExportComplete);
   };
 
   const handleResetEdits = () => {
     if (!editedPdfBytes) return;
-    if (confirm('編集内容をリセットしますか？')) {
+    if (confirm(t.alertResetConfirm)) {
       setEditedPdfBytes(null);
       setCurrentPageIndex(0);
     }
@@ -189,9 +191,9 @@ export const PDFEditor: React.FC = () => {
     <div className="app-container">
       <header className="app-header">
         <h1 className="app-title">
-          📄 Vibe coded PDF Editor
+          📄 {t.title}
         </h1>
-        <p className="app-subtitle">PDFの結合・画像追加・テキスト追加が簡単にできます</p>
+        <p className="app-subtitle">{t.subtitle}</p>
       </header>
 
       <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
@@ -202,7 +204,7 @@ export const PDFEditor: React.FC = () => {
         {selectedFiles.length > 0 && (
           <div className="card" style={{ marginBottom: '1.5rem' }}>
             <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              📁 読み込み済みファイル <span className="badge">{selectedFiles.length}</span>
+              📁 {t.loadedFiles} <span className="badge">{selectedFiles.length}</span>
             </h3>
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               {selectedFiles.map((file, index) => (
@@ -227,7 +229,7 @@ export const PDFEditor: React.FC = () => {
                     className="btn-danger"
                     style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}
                   >
-                    🗑️ 削除
+                    🗑️ {t.delete}
                   </button>
                 </div>
               ))}
@@ -242,35 +244,35 @@ export const PDFEditor: React.FC = () => {
               disabled={selectedFiles.length < 2}
               className="btn"
             >
-              🔗 PDFを結合
+              🔗 {t.mergePdf}
             </button>
             <button
               onClick={handleAddImage}
               disabled={!currentFile}
               className="btn"
             >
-              🖼️ 画像を追加
+              🖼️ {t.addImage}
             </button>
             <button
               onClick={handleAddText}
               disabled={!currentFile}
               className="btn"
             >
-              ✏️ テキストを追加
+              ✏️ {t.addText}
             </button>
             <button
               onClick={handleExportPDF}
               disabled={!editedPdfBytes}
               className="btn-success"
             >
-              💾 エクスポート
+              💾 {t.export}
             </button>
             <button
               onClick={handleResetEdits}
               disabled={!editedPdfBytes}
               className="btn-danger"
             >
-              🔄 リセット
+              🔄 {t.reset}
             </button>
           </div>
         </div>
@@ -282,13 +284,13 @@ export const PDFEditor: React.FC = () => {
             border: '2px solid var(--color-success)',
             color: 'var(--color-success-dark)'
           }}>
-            ✅ 編集中: 変更が保存されています（エクスポートボタンでダウンロードできます）
+            ✅ {t.editingStatus}
           </div>
         )}
 
         <div className="card">
           <h3 style={{ marginBottom: '1rem' }}>
-            プレビュー
+            {t.preview}
           </h3>
           <PDFViewer
             file={previewFile}

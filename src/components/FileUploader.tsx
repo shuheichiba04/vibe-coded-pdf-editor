@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useTranslation } from '../i18n';
 
 interface FileUploaderProps {
   onFilesSelected: (files: File[]) => void;
@@ -12,6 +13,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   accept = { 'application/pdf': ['.pdf'] },
   multiple = true,
 }) => {
+  const t = useTranslation();
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: onFilesSelected,
     accept,
@@ -22,23 +24,23 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     <div
       {...getRootProps()}
       style={{
-        border: '2px dashed #0087F7',
+        border: '2px dashed var(--color-primary)',
         borderRadius: '8px',
         padding: '40px',
         textAlign: 'center',
         cursor: 'pointer',
-        backgroundColor: isDragActive ? '#e3f2fd' : '#f5f5f5',
+        backgroundColor: isDragActive ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
         transition: 'background-color 0.3s',
       }}
     >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <p>ファイルをここにドロップ...</p>
+        <p>{t.uploadAreaActive}</p>
       ) : (
         <div>
-          <p>PDFファイルをドラッグ&ドロップ、またはクリックして選択</p>
-          <p style={{ fontSize: '0.9em', color: '#666' }}>
-            {multiple ? '複数ファイル選択可能' : '単一ファイルのみ'}
+          <p>{t.uploadArea}</p>
+          <p style={{ fontSize: '0.9em', color: 'var(--text-secondary)' }}>
+            {multiple ? t.uploadAreaMultiple : t.uploadAreaSingle}
           </p>
         </div>
       )}
