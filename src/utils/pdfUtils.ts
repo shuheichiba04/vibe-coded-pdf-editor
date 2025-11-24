@@ -134,8 +134,9 @@ export async function addTextToPDF(
   // 日本語フォントを読み込み
   let font;
   try {
-    // 選択されたフォントを読み込み
-    const fontUrl = `/${fontFamily}`;
+    // 選択されたフォントを読み込み（GitHub Pages対応）
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const fontUrl = `${baseUrl}${fontFamily}`;
     console.log('フォントを読み込み中:', fontUrl);
 
     const fontResponse = await fetch(fontUrl);
