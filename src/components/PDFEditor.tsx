@@ -186,96 +186,116 @@ export const PDFEditor: React.FC = () => {
     : currentFile;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1>PDFエディタ</h1>
+    <div className="app-container">
+      <header className="app-header">
+        <h1 className="app-title">
+          📄 PDF Editor
+        </h1>
+        <p className="app-subtitle">PDFの結合・画像追加・テキスト追加が簡単にできます</p>
+      </header>
 
-      <div style={{ marginBottom: '20px' }}>
-        <FileUploader onFilesSelected={handleFilesSelected} />
-      </div>
+      <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
+          <FileUploader onFilesSelected={handleFilesSelected} />
+        </div>
 
-      {selectedFiles.length > 0 && (
-        <div style={{ marginBottom: '20px' }}>
-          <h3>読み込み済みファイル ({selectedFiles.length})</h3>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {selectedFiles.map((file, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: '10px',
-                  border: currentFile === file ? '2px solid #0087F7' : '1px solid #ddd',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  backgroundColor: currentFile === file ? '#e3f2fd' : 'white',
-                }}
-                onClick={() => setCurrentFile(file)}
-              >
-                <div>{file.name}</div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveFile(index);
+        {selectedFiles.length > 0 && (
+          <div className="card" style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              📁 読み込み済みファイル <span className="badge">{selectedFiles.length}</span>
+            </h3>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {selectedFiles.map((file, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    border: `2px solid ${currentFile === file ? 'var(--color-primary)' : 'var(--border-color)'}`,
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    background: currentFile === file ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
+                    transition: 'all 0.2s',
                   }}
-                  style={{ marginTop: '5px', padding: '4px 8px', fontSize: '0.8em' }}
+                  onClick={() => setCurrentFile(file)}
                 >
-                  削除
-                </button>
-              </div>
-            ))}
+                  <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>{file.name}</div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveFile(index);
+                    }}
+                    className="btn-danger"
+                    style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}
+                  >
+                    🗑️ 削除
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={handleMergePDFs}
+              disabled={selectedFiles.length < 2}
+              className="btn"
+            >
+              🔗 PDFを結合
+            </button>
+            <button
+              onClick={handleAddImage}
+              disabled={!currentFile}
+              className="btn"
+            >
+              🖼️ 画像を追加
+            </button>
+            <button
+              onClick={handleAddText}
+              disabled={!currentFile}
+              className="btn"
+            >
+              ✏️ テキストを追加
+            </button>
+            <button
+              onClick={handleExportPDF}
+              disabled={!editedPdfBytes}
+              className="btn-success"
+            >
+              💾 エクスポート
+            </button>
+            <button
+              onClick={handleResetEdits}
+              disabled={!editedPdfBytes}
+              className="btn-danger"
+            >
+              🔄 リセット
+            </button>
           </div>
         </div>
-      )}
 
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <button
-          onClick={handleMergePDFs}
-          disabled={selectedFiles.length < 2}
-          style={{ padding: '10px 20px', fontSize: '1em' }}
-        >
-          PDFを結合
-        </button>
-        <button
-          onClick={handleAddImage}
-          disabled={!currentFile}
-          style={{ padding: '10px 20px', fontSize: '1em' }}
-        >
-          画像を追加
-        </button>
-        <button
-          onClick={handleAddText}
-          disabled={!currentFile}
-          style={{ padding: '10px 20px', fontSize: '1em' }}
-        >
-          テキストを追加
-        </button>
-        <button
-          onClick={handleExportPDF}
-          disabled={!editedPdfBytes}
-          style={{ padding: '10px 20px', fontSize: '1em', backgroundColor: editedPdfBytes ? '#28a745' : '#ccc' }}
-        >
-          編集済みPDFをエクスポート
-        </button>
-        <button
-          onClick={handleResetEdits}
-          disabled={!editedPdfBytes}
-          style={{ padding: '10px 20px', fontSize: '1em', backgroundColor: editedPdfBytes ? '#dc3545' : '#ccc' }}
-        >
-          編集をリセット
-        </button>
-      </div>
+        {editedPdfBytes && (
+          <div className="card" style={{
+            marginBottom: '1.5rem',
+            background: 'var(--color-success-light)',
+            border: '2px solid var(--color-success)',
+            color: 'var(--color-success-dark)'
+          }}>
+            ✅ 編集中: 変更が保存されています（エクスポートボタンでダウンロードできます）
+          </div>
+        )}
 
-      {editedPdfBytes && (
-        <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '4px', color: '#155724' }}>
-          ✅ 編集中: 変更が保存されています（エクスポートボタンでダウンロードできます）
+        <div className="card">
+          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            👁️ プレビュー
+          </h3>
+          <PDFViewer
+            file={previewFile}
+            currentPage={currentPageIndex + 1}
+            onPageChange={(pageNumber) => setCurrentPageIndex(pageNumber - 1)}
+          />
         </div>
-      )}
-
-      <div>
-        <h3>プレビュー</h3>
-        <PDFViewer
-          file={previewFile}
-          currentPage={currentPageIndex + 1}
-          onPageChange={(pageNumber) => setCurrentPageIndex(pageNumber - 1)}
-        />
       </div>
 
       {showImagePositioner && previewFile && selectedImage && (
