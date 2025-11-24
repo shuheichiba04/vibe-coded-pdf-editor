@@ -16,6 +16,9 @@ const translations = {
     delete: 'Delete',
     preview: 'Preview',
     editingStatus: 'Editing: Changes saved (click Export to download)',
+    selectPdfFile: 'Please select a PDF file',
+    previousPage: 'Previous',
+    nextPage: 'Next',
     
     // Alerts
     alertMergeNeed2Files: 'Need at least 2 PDF files to merge',
@@ -47,6 +50,9 @@ const translations = {
     delete: '削除',
     preview: 'プレビュー',
     editingStatus: '編集中: 変更が保存されています（エクスポートボタンでダウンロードできます）',
+    selectPdfFile: 'PDFファイルを選択してください',
+    previousPage: '前のページ',
+    nextPage: '次のページ',
     
     // Alerts
     alertMergeNeed2Files: '結合するには2つ以上のPDFファイルが必要です',

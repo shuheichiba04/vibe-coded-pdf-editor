@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+import { useTranslation } from '../i18n';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -13,6 +14,7 @@ interface PDFViewerProps {
 }
 
 export const PDFViewer: React.FC<PDFViewerProps> = ({ file, currentPage: externalPage, onPageChange }) => {
+  const t = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [internalPage, setInternalPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -67,7 +69,7 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({ file, currentPage: externa
   }, [pdfDoc, currentPage, onPageChange]);
 
   if (!file) {
-    return <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>PDFファイルを選択してください</div>;
+    return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>{t.selectPdfFile}</div>;
   }
 
   const handlePageChange = (newPage: number) => {
@@ -87,15 +89,16 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({ file, currentPage: externa
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <canvas ref={canvasRef} style={{ maxWidth: '100%', border: '1px solid #ddd' }} />
+      <canvas ref={canvasRef} style={{ maxWidth: '100%', border: '1px solid var(--border-color)' }} />
       {totalPages > 0 && (
         <div style={{ marginTop: '20px' }}>
           <button
             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1}
-            style={{ marginRight: '10px', padding: '8px 16px' }}
+            className="btn"
+            style={{ marginRight: '10px' }}
           >
-            前のページ
+            {t.previousPage}
           </button>
           <span>
             {currentPage} / {totalPages}
@@ -103,9 +106,10 @@ export const PDFViewer: React.FC<PDFViewerProps> = ({ file, currentPage: externa
           <button
             onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage >= totalPages}
-            style={{ marginLeft: '10px', padding: '8px 16px' }}
+            className="btn"
+            style={{ marginLeft: '10px' }}
           >
-            次のページ
+            {t.nextPage}
           </button>
         </div>
       )}
